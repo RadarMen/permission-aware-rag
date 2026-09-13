@@ -5,10 +5,12 @@ from sqlalchemy import Boolean, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.associations import user_projects
 
 if TYPE_CHECKING:
     from app.models.role import Role
     from app.models.department import Department
+    from app.models.project import Project
 
 class User(Base):
     __tablename__ = "users"
@@ -71,4 +73,9 @@ class User(Base):
     department: Mapped["Department"] = relationship(
         # 和role同理。
         back_populates="users" 
+    )
+
+    projects: Mapped[list["Project"]] = relationship(
+        secondary=user_projects,
+        back_populates="members"
     )

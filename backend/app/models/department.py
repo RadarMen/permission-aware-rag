@@ -7,6 +7,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
+    from app.models.project import Project
 
 class Department(Base):
     __tablename__ = "departments"
@@ -25,5 +26,9 @@ class Department(Base):
     )
 
     users: Mapped[list["User"]] = relationship(
+        back_populates = "department",
+    )
+
+    projects: Mapped[list["Project"]] = relationship(
         back_populates = "department",
     )
