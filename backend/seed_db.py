@@ -11,6 +11,8 @@ from app.models.role import Role
 from app.models.user import User
 from app.models.project import Project
 
+from app.models.document import Document, DocumentVisibility
+
 def seed_db():
     with SessionLocal() as db:
 
@@ -241,6 +243,110 @@ def seed_db():
                         f"to {project_name}"
                     )
 
+        # =========================
+        # 6. Documents
+        # =========================
+
+        document_data = [
+            {
+                "title": "Employee Handbook",
+                "visibility": DocumentVisibility.PUBLIC,
+                "classification_level": 1,
+                "owner": "admin",
+                "department": None,
+                "project": None,
+            },
+
+            {
+                "title": "R&D Internal Guidelines",
+                "visibility": DocumentVisibility.DEPARTMENT,
+                "classification_level": 1,
+                "owner": "bob",
+                "department": "R&D",
+                "project": None,
+            },
+
+            {
+                "title": "Apollo Architecture",
+                "visibility": DocumentVisibility.PROJECT,
+                "classification_level": 2,
+                "owner": "bob",
+                "department": "R&D",
+                "project": "Apollo",
+            },
+
+            {
+                "title": "Apollo Secret Roadmap",
+                "visibility": DocumentVisibility.PROJECT,
+                "classification_level": 3,
+                "owner": "bob",
+                "department": "R&D",
+                "project": "Apollo",
+            },
+
+            {
+                "title": "Finance Budget",
+                "visibility": DocumentVisibility.DEPARTMENT,
+                "classification_level": 2,
+                "owner": "carol",
+                "department": "Finance",
+                "project": None,
+            },
+
+            {
+                "title": "Bob Private Notes",
+                "visibility": DocumentVisibility.PRIVATE,
+                "classification_level": 1,
+                "owner": "bob",
+                "department": None,
+                "project": None,
+            },
+        ]
+        
+        for data in document_data:
+
+            document = db.scalar(
+                select(Document).where(
+                    Document.title == data["title"]
+                )
+            )
+
+            if document is not None:
+                continue
+
+            owner = db.scalar(
+                select(User).where(
+                    User.username == data["owner"]
+                )
+            )
+
+            department = (
+                departments[data["department"]]
+                if data["department"] is not None
+                else None
+            )
+
+            project = (
+                projects[data["project"]]
+                if data["project"] is not None
+                else None
+            )
+
+            document = Document(
+                title=data["title"],
+                visibility=data["visibility"],
+                classification_level=data["classification_level"],
+                owner=owner,
+                department=department,
+                project=project,
+            )
+
+            db.add(document)
+
+            print(
+                f"Created document: "
+                f"{data['title']}"
+            )
 
         db.commit()
 

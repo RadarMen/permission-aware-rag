@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from app.models.role import Role
     from app.models.department import Department
     from app.models.project import Project
+    from app.models.document import Document
 
 class User(Base):
     __tablename__ = "users"
@@ -78,4 +79,8 @@ class User(Base):
     projects: Mapped[list["Project"]] = relationship(
         secondary=user_projects,
         back_populates="members"
+    )
+
+    owned_documents: Mapped[list["Document"]] = relationship(
+        back_populates="owner"
     )

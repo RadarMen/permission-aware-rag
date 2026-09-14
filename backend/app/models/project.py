@@ -9,6 +9,7 @@ from app.models.associations import user_projects
 if TYPE_CHECKING:
     from app.models.department import Department
     from app.models.user import User
+    from app.models.document import Document
 
 
 class Project(Base):
@@ -42,4 +43,8 @@ class Project(Base):
     members: Mapped[list["User"]] = relationship(
         secondary=user_projects,
         back_populates="projects"
+    )
+
+    documents: Mapped[list["Document"]] = relationship(
+        back_populates="project"
     )
